@@ -16,9 +16,9 @@
 
 (defn javac [opts] (b/javac opts) opts)
 
-(defn jar "Assemble jar from classes and pom." [opts]
-  (b/jar opts)
-  opts)
+(defn jar "Assemble jar from classes and pom." [opts] (b/jar opts) opts)
+
+(defn write-pom [opts] (b/write-pom opts) opts)
 
 (defn ci "Run the CI pipeline of tests (and build the JAR)." [opts]
   (-> opts
@@ -31,6 +31,7 @@
              :jar-file jar-file)
       (bb/clean)
       (javac)
+      (write-pom)
       (jar)))
 
 (defn install "Install the JAR locally." [opts]
