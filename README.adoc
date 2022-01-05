@@ -1,0 +1,58 @@
+= calcite-clj - Use Apache Calcite from Clojure
+
+Small library to facilitate the implementation of calcite adapters in clojure.
+
+It implements `org.apache.calcite.schema.SchemaFactory` and delegates to a Clojure function.
+See https://calcite.apache.org/javadocAggregate/org/apache/calcite/schema/SchemaFactory.html and https://calcite.apache.org/docs/tutorial.html for more information.
+
+.Build instructions
+[source,shell]
+--
+    # Build with tools.build
+    clj -T:build ci
+--
+
+Small library used as a bridge from calcite to clojure: https://github.com/ieugen/clojure-training/blob/main/csv-clojure/calcite-clj/src/main/java/ro.ieugen.calcite.clj/SchemaFactory.java .
+
+With the above code I was able to call code like this:
+
+[source,clojure]
+--
+(let [db {:jdbcUrl "jdbc:calcite:model=resources/model.json"
+            :user "admin"
+            :password "admin"}
+        ds (jdbc/get-datasource db)]
+    (jdbc/execute! ds ["select * from emps where age is null or age >= 40"])))
+--
+and get back SQL results.
+
+Part of the magic is in model.json file.
+It uses `ro.ieugen.calcite.clj.SchemaFactory` and it has an operand property
+`"clojure-clj.schema-factory": "ro.ieugen.calcite-csv/csv-schema"` .
+
+This property is a reference to the Clojure namespace (ro.ieugen.calcite-csv) and function (csv-schema) to call for generating the Schema.
+
+The schema factory is generic and if there is interest I would like to contribute it upstream.
+
+It allows the use of Clojure functions to be used as Schema factories thus creating a bridge to Clojure in a seamless way.
+
+
+Full model.json bellow:
+--
+{
+    "version": "1.0",
+    "defaultSchema": "SALES",
+    "schemas": [
+      {
+        "name": "SALES",
+        "type": "custom",
+        "factory": "ro.ieugen.calcite.clj.SchemaFactory",
+        "operand": {
+          "clojure-clj.schema-factory": "ro.ieugen.calcite-csv/csv-schema",
+          "directory": "resources/sales"
+        }
+      }
+    ]
+  }
+
+--
