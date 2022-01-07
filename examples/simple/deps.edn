@@ -1,0 +1,15 @@
+{:paths ["src" "resources"]
+ :deps {com.github.seancorfield/next.jdbc {:mvn/version "1.2.761"}
+        com.rpl/proxy-plus {:mvn/version "0.0.8"}
+        io.github.ieugen/calcite-clj {:mvn/version "0.1.2"}
+        org.clojure/clojure {:mvn/version "1.10.3"}
+        org.apache.calcite/calcite-core {:mvn/version "1.29.0"}
+        org.apache.calcite/calcite-file {:mvn/version "1.29.0"}
+        org.apache.calcite/calcite-linq4j {:mvn/version "1.29.0"}
+        org.apache.calcite.avatica/avatica-core {:mvn/version "1.20.0"}}
+ :aliases
+ {:build {:deps {io.github.seancorfield/build-clj {:git/tag "v0.6.5" :git/sha "972031a"}}
+          :ns-default build}
+  :dev {:extra-deps {org.clojure/tools.trace {:mvn/version "0.7.11"}
+                     org.slf4j/slf4j-simple {:mvn/version "1.7.30"}}}
+  :sqline {:extra-deps {sqlline/sqlline {:mvn/version "1.12.0"}}}}}
