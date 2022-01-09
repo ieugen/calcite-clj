@@ -1,6 +1,9 @@
+.calva
 .clj-kondo
 .cpcache
 .lsp
 .portal
 target
 *.iml
+
+.nrepl-port

@@ -2,42 +2,97 @@
 
 Small library to facilitate the implementation of calcite adapters in clojure.
 
+Calcite allows you to expose any structured data as a SQL table and use SQL to query that data (relational algebra).
+
 It implements `org.apache.calcite.schema.SchemaFactory` and delegates to a Clojure function.
 See https://calcite.apache.org/javadocAggregate/org/apache/calcite/schema/SchemaFactory.html and https://calcite.apache.org/docs/tutorial.html for more information.
 
-.Build instructions
-[source,shell]
---
-    # Build with tools.build
-    clj -T:build ci
---
-
 Small library used as a bridge from calcite to clojure: https://github.com/ieugen/clojure-training/blob/main/csv-clojure/calcite-clj/src/main/java/ro.ieugen.calcite.clj/SchemaFactory.java .
+
+== How to use
+
+The library is published on Clojars at https://clojars.org/io.github.ieugen/calcite-clj .
+You can find there instructions on how to add the library to your tools.deps, Maven and gradle, etc.
+
+See `examples/simple` for a Clojure implementataion that expose Clojure vectors and interogates them with SQL.
 
 With the above code I was able to call code like this:
 
 [source,clojure]
 --
+;; Code bellow is REDACTED for brevity
+
+(def emps {:name "EMPS"
+           :data [[(int 100) "Fred" (int 10) nil nil             (int 30) (int 25) true false "1996-08-03"]
+                  [(int 110) "Eric"	(int 20) "M" "San Francisco" (int 3)	(int 80)	nil false	"2001-01-01"]
+                  [(int 110) "John"	(int 40) "M" "Vancouver"	   (int 2)	nil false	true	"2002-05-03"]
+                  [(int 120) "Wilma" (int 20)	"F"	nil	           (int 1)	(int 5)	nil true "2005-09-07"]
+                  [(int 130) "Alice" (int 40)	"F"	"Vancouver"	   (int 2)	nil false	true	"2007-01-01"]]})
+
+  ;; In the main entry point in the our application,
+  ;; we load Calcite JDBC driver and instruct it to load our model.json file.
+  ;; The model.json instructs Calcite to load `ro.ieugen.calcite.clj.SchemaFactory .
+  ;; The SchemaFactory implementation will use the operand value for "clojure-clj.schema-factory"
+  ;; to know which clojure function to delegate to (i.e. "calcite-clj.simple/my-schema")
+  ;; The function will build the DB schema with tables, views etc.
+  ;; Calcite will use that schema when parsing and resolving SQL queries.
 (let [db {:jdbcUrl "jdbc:calcite:model=resources/model.json"
             :user "admin"
             :password "admin"}
         ds (jdbc/get-datasource db)]
     (jdbc/execute! ds ["select * from emps where age is null or age >= 40"])))
 --
-and get back SQL results.
+and get back SQL results that look like this:
+
+[source,clojure]
+--
+[#:EMPS{:EMPID 3,
+        :GENDER "M",
+        :NAME "Eric",
+        :MANAGER false,
+        :EMPNO 110,
+        :CITY "San Francisco",
+        :JOINDATE "2001-01-01",
+        :AGE 80,
+        :DEPTNO 20,
+        :SLACKER nil}
+ #:EMPS{:EMPID 2,
+        :GENDER "M",
+        :NAME "John",
+        :MANAGER true,
+        :EMPNO 110,
+        :CITY "Vancouver",
+        :JOINDATE "2002-05-03",
+        :AGE nil,
+        :DEPTNO 40,
+        :SLACKER false}
+ #:EMPS{:EMPID 2,
+        :GENDER "F",
+        :NAME "Alice",
+        :MANAGER true,
+        :EMPNO 130,
+        :CITY "Vancouver",
+        :JOINDATE "2007-01-01",
+        :AGE nil,
+        :DEPTNO 40,
+        :SLACKER false}]
+--
 
 Part of the magic is in model.json file.
-It uses `ro.ieugen.calcite.clj.SchemaFactory` and it has an operand property
-`"clojure-clj.schema-factory": "ro.ieugen.calcite-csv/csv-schema"` .
 
-This property is a reference to the Clojure namespace (ro.ieugen.calcite-csv) and function (csv-schema) to call for generating the Schema.
+It's important to set the "factory" property to "ro.ieugen.calcite.clj.SchemaFactory" and
+also set an operand "clojure-clj.schema-factory" with value "calcite-clj.simple/my-schema" .
+Use your own schema function there.
+
+In our case, `clojure-clj.schema-factory` property is a reference to the Clojure namespace (calcite-clj.simple)
+and function (my-schema) to call for generating the `org.apache.calcite.schema.Schema`.
 
 The schema factory is generic and if there is interest I would like to contribute it upstream.
-
 It allows the use of Clojure functions to be used as Schema factories thus creating a bridge to Clojure in a seamless way.
 
 
 Full model.json bellow:
+[source,json]
 --
 {
     "version": "1.0",
@@ -48,11 +103,21 @@ Full model.json bellow:
         "type": "custom",
         "factory": "ro.ieugen.calcite.clj.SchemaFactory",
         "operand": {
-          "clojure-clj.schema-factory": "ro.ieugen.calcite-csv/csv-schema",
-          "directory": "resources/sales"
+          "clojure-clj.schema-factory": "calcite-clj.simple/my-schema",
         }
       }
     ]
   }
+--
 
+== Development
+
+.Build instructions
+[source,shell]
+--
+    # Build with tools.build
+    clj -T:build ci
+
+    # Deploy to Clojars with CLOJARS_PASSWORD=xxx CLOJARS_USERNAME=yy
+    clj -T:build deploy
 --

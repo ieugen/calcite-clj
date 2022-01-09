@@ -63,7 +63,7 @@
 (defn row-type
   "Build a calcite row type (reltype)from a clojure structure"
   ^RelDataType [^JavaTypeFactory type-factory rowdef]
-  (println "row-type" rowdef)
+  ;; (println "row-type" rowdef)
   (.createStructType type-factory ^List (map (partial row->rel-type type-factory) rowdef)))
 
 (defn scannable-table
@@ -130,6 +130,12 @@
   (require '[clojure.tools.trace :as trace])
   (trace/trace-ns 'calcite-clj.simple)
 
+  ;; This is the actual main entry point in the application
+  ;; We load calcite JDBC driver and instruct it to load our model.json file
+  ;; The model.json instructs Calcite to load `ro.ieugen.calcite.clj.SchemaFactory .
+  ;; The SchemaFactory implementation will use the operand value for "clojure-clj.schema-factory"
+  ;; to know which clojure function to delegate to (i.e. "calcite-clj.simple/my-schema")
+
   (let [db {:jdbcUrl "jdbc:calcite:model=resources/model.json"
             :user "admin"
             :password "admin"}
@@ -144,4 +150,5 @@
     (with-open [connection (jdbc/get-connection ds)]
       (let [metadata (.getMetaData connection)
             rs (.getTables metadata nil nil nil (into-array ["TABLE" "VIEW"]))]
-        (rs/datafiable-result-set rs ds)))))
+        (rs/datafiable-result-set rs ds))))
+  )
