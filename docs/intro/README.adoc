@@ -1,0 +1,8 @@
+= calcite-clj presentation
+
+[source,shell]
+--
+    npm run start
+
+    npm run build
+--

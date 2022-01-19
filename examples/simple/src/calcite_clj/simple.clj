@@ -1,4 +1,6 @@
 (ns calcite-clj.simple
+  {:clj-kondo/config '{:lint-as {com.rpl.proxy-plus/proxy+ clojure.core/proxy}
+                       :linters {:unused-binding {:exclude [this]}}}}
   (:require [com.rpl.proxy-plus :refer [proxy+]]
             [next.jdbc :as jdbc]
             [next.jdbc.result-set :as rs])
@@ -45,7 +47,7 @@
                     {:name "MANAGER" :type SqlTypeName/BOOLEAN}
                     {:name "JOINDATE" :type SqlTypeName/VARCHAR}]
            :data [[(int 100) "Fred" (int 10) nil nil             (int 30) (int 25) true false "1996-08-03"]
-                  [(int 110) "Eric"	(int 20) "M" "San Francisco" (int 3)	(int 80)	nil false	"2001-01-01"]
+                  [(int 110) "Eric"	(int 51) "M" "San Francisco" (int 3)	(int 80)	nil false	"2001-01-01"]
                   [(int 110) "John"	(int 40) "M" "Vancouver"	   (int 2)	nil false	true	"2002-05-03"]
                   [(int 120) "Wilma" (int 20)	"F"	nil	           (int 1)	(int 5)	nil true "2005-09-07"]
                   [(int 130) "Alice" (int 40)	"F"	"Vancouver"	   (int 2)	nil false	true	"2007-01-01"]]})
@@ -135,7 +137,7 @@
   ;; The model.json instructs Calcite to load `ro.ieugen.calcite.clj.SchemaFactory .
   ;; The SchemaFactory implementation will use the operand value for "clojure-clj.schema-factory"
   ;; to know which clojure function to delegate to (i.e. "calcite-clj.simple/my-schema")
-
+  
   (let [db {:jdbcUrl "jdbc:calcite:model=resources/model.json"
             :user "admin"
             :password "admin"}

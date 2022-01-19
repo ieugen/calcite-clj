@@ -7,3 +7,4 @@ target
 *.iml
 
 .nrepl-port
+node_modules/
