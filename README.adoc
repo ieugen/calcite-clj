@@ -16,7 +16,13 @@ You can find there instructions on how to add the library to your tools.deps, Ma
 
 See `examples/simple` for a Clojure implementataion that expose Clojure vectors and interogates them with SQL.
 
-[![calcite-clj Apache Calcite Online Meetup 2022](https://img.youtube.com/vi/9CUWX8JHA90/0.jpg)](https://www.youtube.com/watch?v=9CUWX8JHA90)
+ifdef::env-github[]
+image:https://img.youtube.com/vi/9CUWX8JHA90/0.jpg[link=https://www.youtube.com/watch?v=9CUWX8JHA90]
+endif::[]
+
+ifndef::env-github[]
+video::9CUWX8JHA90[youtube]
+endif::[]
 
 
 With the above code I was able to call code like this:
