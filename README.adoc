@@ -13,7 +13,7 @@ Small library used as a bridge from calcite to clojure: https://github.com/ieuge
 
 == How to use
 
-The library is published on Clojars at https://clojars.org/io.github.ieugen/calcite-clj .
+The library is published on Clojars and docs are published on https://cljdoc.org/d/io.github.ieugen/calcite-clj/0.1.14/doc/readme .
 You can find there instructions on how to add the library to your tools.deps, Maven and gradle, etc.
 
 See `examples/simple` for a Clojure implementataion that expose Clojure vectors and interogates them with SQL.
