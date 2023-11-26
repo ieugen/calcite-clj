@@ -2,8 +2,7 @@
 ;; Build instructions
 ;;
 (ns build
-  (:require [clojure.tools.build.api :as b]
-            [org.corfield.build :as bb]))
+  (:require [clojure.tools.build.api :as b]))
 
 
 (def lib 'io.github.ieugen/calcite-clj)
@@ -16,30 +15,51 @@
 
 (defn javac [opts] (b/javac opts) opts)
 
-(defn jar "Assemble jar from classes and pom." [opts] (b/jar opts) opts)
+(defn jar "Assemble jar from classes and pom."
+  [opts]
+  (b/jar opts)
+  opts)
 
 (defn write-pom [opts] (b/write-pom opts) opts)
 
-(defn ci "Run the CI pipeline of tests (and build the JAR)." [opts]
-  (-> opts
-      (assoc :lib lib
-             :version version
-             :basis basis
-             :javac-opts ["-source" "8" "-target" "8"]
-             :src-dirs src-dirs
-             :class-dir class-dir
-             :jar-file jar-file)
-      (bb/clean)
-      (javac)
-      (write-pom)
-      (jar)))
+(defn clean [opts]
+  (b/delete {:path "target"})
+  opts)
+
+(defn ci "Run the CI pipeline of tests (and build the JAR)."
+  [params]
+  (let [params (assoc params :lib lib
+                      :version version
+                      :basis basis
+                      :javac-opts ["-source" "8" "-target" "8"
+                                   ;; disable annotation processing
+                                   "-proc:none"]
+                      :src-dirs src-dirs
+                      :class-dir class-dir
+                      :jar-file jar-file
+                      :scm {:connection "https://github.com/ieugen/calcite-clj.git"
+                            :developerConnection "https://github.com/ieugen/calcite-clj.git"
+                            :url "https://github.com/ieugen/calcite-clj"})]
+    (clean params)
+    (javac params)
+    (write-pom params)
+    (jar params)
+    params))
 
 (defn install "Install the JAR locally." [opts]
   (-> opts
       (assoc :lib lib :version version)
-      (bb/install)))
+      (b/install)))
 
-(defn deploy "Deploy the JAR to Clojars." [opts]
+#_(defn deploy "Deploy the JAR to Clojars." [opts]
   (-> opts
       (assoc :lib lib :version version)
-      (bb/deploy)))
+      (b/deploy)))
+
+(comment
+
+  (clean nil)
+  (ci nil)
+
+
+  )

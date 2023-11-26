@@ -8,3 +8,4 @@ target
 
 .nrepl-port
 node_modules/
+.envrc
