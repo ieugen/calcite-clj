@@ -1,11 +1,7 @@
 {:paths []
- :deps {org.clojure/clojure {:mvn/version "1.10.3"}
+ :deps {org.clojure/clojure {:mvn/version "1.11.1"}
         org.apache.calcite/calcite-core {:mvn/version "1.34.0"}}
  :aliases
- {:build {:deps {io.github.clojure/tools.build {:mvn/version "0.9.6"}}
-          :ns-default build}
-  :deploy {:extra-deps {slipset/deps-deploy {:mvn/version "0.2.1"}}
-           :exec-fn deps-deploy.deps-deploy/deploy
-           :exec-args {:installer :remote
-                       :sign-releases? true
-                       :artifact "deps-deploy.jar"}}}}
+ {:build {:deps {io.github.clojure/tools.build {:mvn/version "0.9.6"}
+                 slipset/deps-deploy {:mvn/version "0.2.1"}}
+          :ns-default build}}}
