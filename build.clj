@@ -2,7 +2,8 @@
 ;; Build instructions
 ;;
 (ns build
-  (:require [clojure.tools.build.api :as b]))
+  (:require [clojure.tools.build.api :as b]
+            [deps-deploy.deps-deploy :as dd]))
 
 
 (def lib 'io.github.ieugen/calcite-clj)
@@ -51,15 +52,23 @@
       (assoc :lib lib :version version)
       (b/install)))
 
-#_(defn deploy "Deploy the JAR to Clojars." [opts]
-  (-> opts
-      (assoc :lib lib :version version)
-      (b/deploy)))
+(defn deploy "Deploy the JAR to Clojars."
+  [params]
+  (let [params (merge {:installer :remote
+                       :lib lib
+                       :version version
+                       :artifact jar-file
+                       :class-dir class-dir}
+                      params)
+        pom-file (b/pom-path params)
+        params (assoc params :pom-file pom-file)]
+    (dd/deploy params)))
 
 (comment
 
   (clean nil)
   (ci nil)
+  (deploy nil)
 
 
   )
