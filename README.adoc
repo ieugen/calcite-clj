@@ -1,5 +1,7 @@
 = calcite-clj - Use Apache Calcite from Clojure
 
+image::https://img.shields.io/clojars/v/io.github.ieugen/calcite-clj.svg[Clojars project,link=https://clojars.org/io.github.ieugen/calcite-clj]
+
 Small library to facilitate the implementation of calcite adapters in clojure.
 
 Calcite allows you to expose any structured data as a SQL table and use SQL to query that data (relational algebra).
